@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>买车总成本</title>
+<style>
+:root{--bg:#f7f5f0;--ink:#16181a;--mute:#6b6e6a;--rule:#dcd8cf;--card:#fcfbf8;--acc:#27463b;--accbg:#eef1ec}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink)}
+body{font-family:-apple-system,"Helvetica Neue","PingFang SC","Noto Sans CJK SC",sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:720px;margin:0 auto;padding:40px 24px 80px}
+header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:48px}
+h1{font-size:28px;font-weight:600;letter-spacing:-.01em;margin:0 0 6px}
+.lede{margin:0;color:var(--mute)}
+.lang{position:relative}
+.icon-btn{width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;background:transparent;border:1px solid var(--rule);border-radius:3px;color:var(--ink);cursor:pointer}
+.icon-btn:hover{border-color:var(--ink)}
+.menu{position:absolute;right:0;top:48px;min-width:132px;background:var(--card);border:1px solid var(--rule);border-radius:3px;padding:4px 0;margin:0;list-style:none;z-index:5}
+.menu[hidden]{display:none}
+.menu button{display:block;width:100%;text-align:left;background:none;border:0;padding:10px 16px;font:inherit;color:var(--ink);cursor:pointer}
+.menu button:hover,.menu button:focus{background:var(--accbg);outline:none}
+.menu button[aria-checked="true"]{color:var(--acc);font-weight:600}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:3px;padding:28px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px 24px}
+.field label{display:block;font-size:14px;color:var(--mute);margin-bottom:6px}
+.field input,.field select{width:100%;height:44px;font-size:16px;font-family:inherit;color:var(--ink);background:#fff;border:1px solid var(--rule);border-radius:3px;padding:0 12px;font-variant-numeric:tabular-nums}
+.field input:focus,.field select:focus{border-color:var(--acc);outline:none}
+.check{display:flex;align-items:center;gap:10px;min-height:44px;margin-top:8px;cursor:pointer}
+.check input{width:20px;height:20px;accent-color:var(--acc)}
+.presets{display:flex;flex-wrap:wrap;gap:4px 20px;margin:0 0 20px;padding-bottom:16px;border-bottom:1px solid var(--rule)}
+.link{background:none;border:0;padding:8px 0;font:inherit;font-size:14px;color:var(--acc);cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--rule)}
+.link:hover{text-decoration-color:var(--acc)}
+.primary{display:block;width:100%;height:48px;margin-top:24px;background:var(--acc);color:#fff;border:0;border-radius:3px;font:inherit;font-size:16px;font-weight:600;cursor:pointer}
+.primary:disabled{opacity:.6;cursor:default}
+.secondary{height:44px;padding:0 20px;background:transparent;color:var(--acc);border:1px solid var(--acc);border-radius:3px;font:inherit;cursor:pointer;margin-top:12px}
+#out{margin-top:56px;min-height:120px}
+.quiet{color:var(--mute);margin:0}
+.nums{display:grid;gap:32px}
+.num .k{font-size:14px;color:var(--mute);margin:0 0 4px}
+.num .v{font-size:48px;font-weight:500;letter-spacing:-.02em;line-height:1.1;margin:0;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.num .v .dash{color:var(--mute);margin:0 .2em}
+.grey .v{color:var(--mute)}
+.small{font-size:14px;color:var(--mute);margin:24px 0 0}
+.lease{margin:12px 0 0;padding-top:12px;border-top:1px solid var(--rule);font-variant-numeric:tabular-nums}
+.explain{margin:32px 0 0;padding-top:24px;border-top:1px solid var(--rule);white-space:pre-line;max-width:62ch}
+.notice{margin:24px 0 0;padding:14px 16px;border-left:2px solid var(--acc);background:var(--accbg);border-radius:0 3px 3px 0}
+.notice p{margin:0}
+.sk{background:var(--rule);border-radius:2px;height:14px;margin:10px 0;animation:pulse 1.4s ease-in-out infinite}
+.sk.big{height:44px;width:60%;margin-bottom:28px}
+@keyframes pulse{50%{opacity:.45}}
+@media (prefers-reduced-motion:reduce){.sk{animation:none}}
+.compare{margin-top:96px;padding-top:40px;border-top:1px solid var(--rule)}
+.compare h2{font-size:20px;font-weight:600;margin:0 0 24px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:0 32px}
+.col h3{font-size:14px;font-weight:600;margin:0 0 8px;color:var(--mute)}
+.col.ours{border-left:2px solid var(--acc);padding-left:20px}
+.col.ours h3{color:var(--acc)}
+.col ul{list-style:none;margin:0;padding:0}
+.col li{padding:14px 0;border-top:1px solid var(--rule);min-height:76px}
+.col li span{display:block}
+.disclaimer{margin-top:48px;font-size:13px;color:var(--mute)}
+.disclaimer span{display:block}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:600px){
+  .wrap{padding:28px 18px 64px}
+  .card{padding:20px}
+  .grid{grid-template-columns:1fr}
+  .num .v{font-size:40px}
+  .cols{grid-template-columns:1fr;gap:28px}
+  .col li{min-height:0}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <h1 data-i18n="name">买车总成本</h1>
+    <p class="lede" data-i18n="lede">看清买车真正花多少</p>
+  </div>
+  <div class="lang">
+    <button type="button" class="icon-btn" id="langBtn" aria-haspopup="true" aria-expanded="false" aria-controls="langMenu" data-i18n-aria="langLabel">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg>
+    </button>
+    <ul class="menu" id="langMenu" role="menu" hidden>
+      <li role="none"><button type="button" role="menuitemradio" data-lang="zh" lang="zh-CN">中文</button></li>
+      <li role="none"><button type="button" role="menuitemradio" data-lang="en" lang="en">English</button></li>
+    </ul>
+  </div>
+</header>
+
+<main>
+<form id="f" class="card" novalidate>
+  <div class="presets">
+    <button type="button" class="link" data-preset="typical" data-i18n="pTypical">常规示例</button>
+    <button type="button" class="link" data-preset="alaska" data-i18n="pAlaska">阿拉斯加</button>
+    <button type="button" class="link" data-preset="decimal" data-i18n="pDecimal">利率写成小数</button>
+  </div>
+  <div class="grid">
+    <div class="field"><label for="price" data-i18n="price">车价</label><input id="price" name="price" type="number" inputmode="decimal" step="any"></div>
+    <div class="field"><label for="down" data-i18n="down">首付</label><input id="down" name="down" type="number" inputmode="decimal" step="any"></div>
+    <div class="field"><label for="term_months" data-i18n="term">贷款月数</label><input id="term_months" name="term_months" type="number" inputmode="numeric" step="any"></div>
+    <div class="field"><label for="apr" data-i18n="rate">年利率 %</label><input id="apr" name="apr" type="number" inputmode="decimal" step="any"></div>
+    <div class="field"><label for="state" data-i18n="state">州</label><input id="state" name="state" type="text" maxlength="2" autocapitalize="characters" autocomplete="off" spellcheck="false"></div>
+    <div class="field"><label for="age" data-i18n="age">驾驶人年龄</label><input id="age" name="age" type="number" inputmode="numeric" step="any"></div>
+    <div class="field"><label for="car_type" data-i18n="car">车型</label>
+      <select id="car_type" name="car_type">
+        <option value="sedan" data-i18n="sedan">轿车</option>
+        <option value="suv" data-i18n="suv">SUV</option>
+        <option value="truck" data-i18n="truck">皮卡</option>
+        <option value="ev" data-i18n="ev">电动车</option>
+        <option value="sports" data-i18n="sports">跑车</option>
+      </select>
+    </div>
+    <div class="field"><label class="check"><input type="checkbox" name="want_lease" id="want_lease"><span data-i18n="lease">同时比较租赁</span></label></div>
+  </div>
+  <button type="submit" class="primary" id="go" data-i18n="calc">计算</button>
+</form>
+
+<section id="out" aria-live="polite" aria-busy="false"></section>
+
+<section class="compare" aria-labelledby="cmpTitle">
+  <h2 id="cmpTitle" data-i18n="cmpTitle">和普通计算器有什么不同</h2>
+  <div class="cols">
+    <div class="col"><h3 data-i18n="colPlain">普通计算器</h3><ul id="colPlain"></ul></div>
+    <div class="col ours"><h3 data-i18n="colOurs">本产品</h3><ul id="colOurs"></ul></div>
+  </div>
+  <p class="disclaimer" id="disc"></p>
+</section>
+</main>
+</div>
+
+<script>
+(function(){
+'use strict';
+var T = {
+  zh: {
+    title:'买车总成本', name:'买车总成本', lede:'看清买车真正花多少', langLabel:'切换语言',
+    pTypical:'常规示例', pAlaska:'阿拉斯加', pDecimal:'利率写成小数',
+    price:'车价', down:'首付', term:'贷款月数', rate:'年利率 %', state:'州', age:'驾驶人年龄', car:'车型',
+    sedan:'轿车', suv:'SUV', truck:'皮卡', ev:'电动车', sports:'跑车', lease:'同时比较租赁',
+    calc:'计算', calcing:'计算中', retry:'重试',
+    empty:'填好信息后点计算',
+    monthly:'每月还款', ins:'每月保险估算', total:'贷款期内总成本',
+    insNote:'保险为估算区间 非报价', leaseLine:'租赁每月',
+    mayBeOff:'这次结果可能不准',
+    inputErr:['输入好像有问题','请检查后再试'], netErr:['可能网络不好','请再试一次'],
+    wState:function(s){ return [(s || '该州') + '暂无数据', '已用平均值估算']; },
+    wDecimal:['年利率已按小数换算','请确认'], wCar:['车型未知','按轿车估算'],
+    cmpTitle:'和普通计算器有什么不同', colPlain:'普通计算器', colOurs:'本产品',
+    plain:[['只给一个月供'],['没有解释'],['悄悄忽略不支持的输入'],['无法回看']],
+    ours:[['数字由程序精确计算','AI 从不算数'],['AI 只负责讲清楚','用大白话说明'],['不会悄悄漏掉保险','有问题会提示你'],['每次计算都可回看','随时可以核对']],
+    disc:['示例数据','仅供参考','非理财建议']
+  },
+  en: {
+    title:'Car total cost', name:'Car cost', lede:'See what a car really costs', langLabel:'Change language',
+    pTypical:'Typical', pAlaska:'Alaska', pDecimal:'Rate as decimal',
+    price:'Car price', down:'Down payment', term:'Loan months', rate:'Interest rate %', state:'State', age:'Driver age', car:'Car type',
+    sedan:'Sedan', suv:'SUV', truck:'Truck', ev:'Electric', sports:'Sports', lease:'Also compare lease',
+    calc:'Calculate', calcing:'Calculating', retry:'Retry',
+    empty:'Fill in and press Calculate',
+    monthly:'Monthly payment', ins:'Monthly insurance estimate', total:'Total cost over the loan',
+    insNote:'Insurance is an estimate not a quote', leaseLine:'Lease monthly',
+    mayBeOff:'This result may be off',
+    inputErr:['Something looks off','Please check your inputs'], netErr:['Network may be weak','Please try again'],
+    wState:function(s){ return ['No data for ' + (s || 'this state'), 'Average used']; },
+    wDecimal:['Interest rate read as decimal','Please confirm'], wCar:['Car type unknown','Sedan used'],
+    cmpTitle:'Not just a calculator', colPlain:'Plain calculator', colOurs:'This app',
+    plain:[['One payment only'],['No explanation'],['Ignores odd inputs quietly'],['Cannot look back']],
+    ours:[['Numbers come exact from code','AI never does the math'],['AI only explains','In plain words'],['Never drops insurance quietly','Shows a warning instead'],['Every run can be reviewed','And checked later']],
+    disc:['Sample data','For reference only','Not financial advice']
+  }
+};
+var PRESETS = {
+  typical:{state:'NJ', age:40, price:30000, down:6000, term_months:48, apr:6.5, car_type:'sedan', want_lease:true},
+  alaska: {state:'AK', age:34, price:32000, down:5000, term_months:60, apr:6.9, car_type:'suv', want_lease:false},
+  decimal:{state:'NY', age:45, price:28000, down:3000, term_months:72, apr:0.065, car_type:'sedan', want_lease:false}
+};
+var NUMS = ['price','down','term_months','apr','age'];
+var TIMEOUT_MS = 30000;
+
+var form = document.getElementById('f');
+var out = document.getElementById('out');
+var go = document.getElementById('go');
+var langBtn = document.getElementById('langBtn');
+var langMenu = document.getElementById('langMenu');
+var lang = 'zh', busy = false, lastPayload = null, view = {kind:'empty'};
+
+/* ---------- DOM helpers ---------- */
+function el(tag, props){
+  var n = document.createElement(tag);
+  if (props) for (var k in props){
+    var v = props[k];
+    if (v == null || v === false) continue;
+    if (k === 'class') n.className = v;
+    else if (k === 'text') n.textContent = v;
+    else if (k.slice(0,2) === 'on') n.addEventListener(k.slice(2), v);
+    else n.setAttribute(k, v === true ? '' : v);
+  }
+  for (var i = 2; i < arguments.length; i++) add(n, arguments[i]);
+  return n;
+}
+function add(n, c){
+  if (c == null || c === false) return;
+  if (Array.isArray(c)) { c.forEach(function(x){ add(n, x); }); return; }
+  n.append(c instanceof Node ? c : String(c));
+}
+function isNum(x){ return x !== null && x !== '' && x !== undefined && isFinite(Number(x)); }
+function usd(x, d){
+  if (!isNum(x)) return '-';
+  var v = Number(x);
+  return (v < 0 ? '-$' : '$') + Math.abs(v).toLocaleString('en-US', {minimumFractionDigits:d, maximumFractionDigits:d});
+}
+function range(lo, hi){ return [usd(lo,0), el('span',{class:'dash','aria-hidden':'true'}, '-'), el('span',{class:'sr'}, ' to '), usd(hi,0)]; }
+function lines(arr){ return arr.map(function(s){ return el('span', null, s); }); }
+function t(){ return T[lang]; }
+
+/* ---------- Language ---------- */
+function detectLang(){
+  try { var s = localStorage.getItem('carcost.lang'); if (s === 'zh' || s === 'en') return s; } catch (e) {}
+  var langs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ''];
+  for (var i = 0; i < langs.length; i++) if (String(langs[i]).toLowerCase().indexOf('zh') === 0) return 'zh';
+  return 'en';
+}
+function applyLang(){
+  var d = t();
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+  document.title = d.title;
+  document.querySelectorAll('[data-i18n]').forEach(function(n){
+    var k = n.getAttribute('data-i18n');
+    if (typeof d[k] === 'string') n.textContent = d[k];
+  });
+  document.querySelectorAll('[data-i18n-aria]').forEach(function(n){ n.setAttribute('aria-label', d[n.getAttribute('data-i18n-aria')]); });
+  langMenu.querySelectorAll('[data-lang]').forEach(function(b){ b.setAttribute('aria-checked', b.getAttribute('data-lang') === lang ? 'true' : 'false'); });
+  go.textContent = busy ? d.calcing : d.calc;
+  document.getElementById('colPlain').replaceChildren.apply(document.getElementById('colPlain'), d.plain.map(function(r){ return el('li', null, lines(r)); }));
+  document.getElementById('colOurs').replaceChildren.apply(document.getElementById('colOurs'), d.ours.map(function(r){ return el('li', null, lines(r)); }));
+  document.getElementById('disc').replaceChildren.apply(document.getElementById('disc'), lines(d.disc));
+  paint();
+}
+function setLang(l){
+  lang = l;
+  try { localStorage.setItem('carcost.lang', l); } catch (e) {}
+  applyLang();
+}
+function openMenu(){
+  langMenu.hidden = false; langBtn.setAttribute('aria-expanded','true');
+  var cur = langMenu.querySelector('[aria-checked="true"]') || langMenu.querySelector('button');
+  cur.focus();
+}
+function closeMenu(focusBtn){
+  if (langMenu.hidden) return;
+  langMenu.hidden = true; langBtn.setAttribute('aria-expanded','false');
+  if (focusBtn) langBtn.focus();
+}
+langBtn.addEventListener('click', function(){ if (langMenu.hidden) openMenu(); else closeMenu(false); });
+langMenu.addEventListener('click', function(e){
+  var b = e.target.closest('[data-lang]'); if (!b) return;
+  setLang(b.getAttribute('data-lang')); closeMenu(true);
+});
+langMenu.addEventListener('keydown', function(e){
+  var items = Array.prototype.slice.call(langMenu.querySelectorAll('button'));
+  var i = items.indexOf(document.activeElement);
+  if (e.key === 'ArrowDown') { e.preventDefault(); items[(i + 1) % items.length].focus(); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); items[(i - 1 + items.length) % items.length].focus(); }
+  else if (e.key === 'Tab') closeMenu(false);
+});
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeMenu(true); });
+document.addEventListener('click', function(e){ if (!e.target.closest('.lang')) closeMenu(false); });
+
+/* ---------- Presets & form ---------- */
+function applyPreset(key){
+  var p = PRESETS[key]; if (!p) return;
+  for (var k in p){
+    var f = form.elements[k];
+    if (f.type === 'checkbox') f.checked = !!p[k]; else f.value = p[k];
+  }
+}
+document.querySelectorAll('[data-preset]').forEach(function(b){
+  b.addEventListener('click', function(){ applyPreset(b.getAttribute('data-preset')); });
+});
+function readForm(){
+  var d = {};
+  for (var i = 0; i < NUMS.length; i++){
+    var raw = String(form.elements[NUMS[i]].value).trim();
+    if (raw === '' || !isFinite(Number(raw))) return null;
+    d[NUMS[i]] = Number(raw);
+  }
+  d.state = String(form.elements.state.value).trim().toUpperCase();
+  d.car_type = form.elements.car_type.value;
+  d.want_lease = form.elements.want_lease.checked;
+  d.version = 'v2';
+  return {price:d.price, down:d.down, term_months:d.term_months, apr:d.apr, state:d.state, age:d.age, car_type:d.car_type, want_lease:d.want_lease, version:d.version};
+}
+function setBusy(on){
+  busy = on;
+  go.disabled = on;
+  go.textContent = on ? t().calcing : t().calc;
+  out.setAttribute('aria-busy', on ? 'true' : 'false');
+}
+
+/* ---------- API ---------- */
+async function run(payload){
+  if (busy) return;
+  lastPayload = payload;
+  setBusy(true);
+  show({kind:'loading'});
+  var ctrl = typeof AbortController === 'function' ? new AbortController() : null;
+  var timer = ctrl ? setTimeout(function(){ ctrl.abort(); }, TIMEOUT_MS) : null;
+  var next;
+  try {
+    var res = await fetch('/api/advise', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload), signal: ctrl ? ctrl.signal : undefined});
+    var text = await res.text(), data = null;
+    try { data = JSON.parse(text); } catch (e) { data = null; }
+    if (!data || typeof data !== 'object') next = {kind:'net'};
+    else if (!res.ok && !data.loan) next = isInputError(data) ? {kind:'input'} : {kind:'net'};
+    else next = {kind:'result', r:data, state:payload.state};
+  } catch (err) {
+    next = {kind:'net'};
+  } finally {
+    if (timer) clearTimeout(timer);
+    setBusy(false);
+  }
+  show(next);
+}
+function isInputError(r){
+  var e = String((r && r.error) || '');
+  return /InputError|ValueError|must be|outside/i.test(e);
+}
+form.addEventListener('submit', function(e){
+  e.preventDefault();
+  if (busy) return;
+  var p = readForm();
+  if (!p) { show({kind:'input'}); return; }
+  run(p);
+});
+
+/* ---------- Rendering ---------- */
+function show(v){ view = v; paint(); }
+function paint(){
+  var d = t(), v = view;
+  if (v.kind === 'empty') out.replaceChildren(el('p',{class:'quiet', text:d.empty}));
+  else if (v.kind === 'loading') out.replaceChildren(
+    el('p',{class:'sr', text:d.calcing}),
+    el('div',{'aria-hidden':'true'}, el('div',{class:'sk', style:'width:30%'}), el('div',{class:'sk big'}), el('div',{class:'sk', style:'width:40%'}), el('div',{class:'sk big'}), el('div',{class:'sk', style:'width:35%'}), el('div',{class:'sk big'})));
+  else if (v.kind === 'net') out.replaceChildren(
+    el('div',{class:'notice', role:'alert'}, el('p', null, lines(d.netErr))),
+    el('button',{type:'button', class:'secondary', onclick:function(){ if (lastPayload) run(lastPayload); else form.requestSubmit ? form.requestSubmit() : null; }}, d.retry));
+  else if (v.kind === 'input') out.replaceChildren(el('div',{class:'notice', role:'alert'}, el('p', null, lines(d.inputErr))));
+  else if (v.kind === 'result') renderResult(v.r, v.state);
+}
+function friendlyWarnings(r, state){
+  var d = t(), seen = {}, outl = [];
+  (Array.isArray(r.warnings) ? r.warnings : []).forEach(function(w){
+    w = String(w);
+    var key = null, msg = null;
+    if (/replaced by deterministic|已替换为确定性/i.test(w)) return;
+    if (/not in the sample table|不在示例表/i.test(w)) { key = 's'; msg = d.wState(state); }
+    else if (/decimal fraction|小数写法/i.test(w)) { key = 'd'; msg = d.wDecimal; }
+    else if (/unknown car|car[_ ]type|车型未知|未知车型/i.test(w)) { key = 'c'; msg = d.wCar; }
+    if (key && !seen[key]) { seen[key] = 1; outl.push(msg); }
+  });
+  if (!outl.length) return null;
+  return el('div',{class:'notice', role:'status'}, outl.map(function(m){ return el('p', null, lines(m)); }));
+}
+function splitExplanation(s){
+  var m = /^[ \t#*>]*(中文|Chinese)/im.exec(s);
+  if (!m || m.index === 0) return null;
+  var en = s.slice(0, m.index).replace(/^\s*[#*]*\s*English\s*[#*]*\s*[:：]?[ \t]*\**/i, '').trim();
+  var zh = s.slice(m.index).replace(/^[ \t#*>]*(?:中文|Chinese)(?:[^\n:：]{0,16}[:：]|[ \t#*]*(?=\n))[ \t*]*/i, '').trim();
+  if (!en || !zh) return null;
+  return {en: en, zh: zh};
+}
+function cleanText(s){
+  s = s.replace(/^[ \t]*[-*_]{3,}[ \t]*$/gm, '').replace(/\*\*/g, '').replace(/^[ \t]*[-*][ \t]+/gm, '').replace(/^[ \t]*#+[ \t]*/gm, '').replace(/\n{3,}/g, '\n\n').trim();
+  if (s.length > 700) {
+    var cut = s.slice(0, 700), best = -1, re = /[.!?。！？](?=\s|$)|[。！？]/g, m;
+    while ((m = re.exec(cut))) best = m.index + 1;
+    s = (best > 200 ? cut.slice(0, best) : cut).trim();
+  }
+  return s;
+}
+function renderResult(r, state){
+  var d = t();
+  if (!r.loan || typeof r.loan !== 'object') {
+    out.replaceChildren(r.ok === false && isInputError(r)
+      ? el('div',{class:'notice', role:'alert'}, el('p', null, lines(d.inputErr)))
+      : el('div',{class:'notice', role:'alert'}, el('p', null, lines(d.netErr))),
+      isInputError(r) ? null : el('button',{type:'button', class:'secondary', onclick:function(){ if (lastPayload) run(lastPayload); }}, d.retry));
+    return;
+  }
+  var L = r.loan, I = r.insurance || {}, Tc = r.total_cost || {}, bad = r.ok === false;
+  var kids = [];
+  if (bad) kids.push(el('div',{class:'notice', role:'status', style:'margin:0 0 24px'}, el('p',{text:d.mayBeOff})));
+  kids.push(el('div',{class:'nums' + (bad ? ' grey' : '')},
+    el('div',{class:'num'}, el('p',{class:'k', text:d.monthly}), el('p',{class:'v'}, usd(L.monthly_payment, 2))),
+    el('div',{class:'num'}, el('p',{class:'k', text:d.ins}), el('p',{class:'v'}, range(I.monthly_low, I.monthly_high))),
+    el('div',{class:'num'}, el('p',{class:'k', text:d.total}), el('p',{class:'v'}, range(Tc.total_low, Tc.total_high)))));
+  kids.push(el('p',{class:'small', text:d.insNote}));
+  if (r.lease && typeof r.lease === 'object' && isNum(r.lease.monthly_payment))
+    kids.push(el('p',{class:'lease'}, d.leaseLine + ' ' + usd(r.lease.monthly_payment, 2)));
+  var w = friendlyWarnings(r, state);
+  if (w) kids.push(w);
+  var full = String(r.explanation || '').trim();
+  if (full) {
+    var parts = splitExplanation(full);
+    var txt = cleanText(parts ? parts[lang] : full);
+    if (txt) kids.push(el('p',{class:'explain', lang: parts ? (lang === 'zh' ? 'zh-CN' : 'en') : null, text: txt}));
+  }
+  out.replaceChildren.apply(out, kids);
+}
+
+/* ---------- Boot ---------- */
+function maybeDemo(){
+  if (location.hash !== '#demo') return;
+  applyPreset('typical');
+  if (form.requestSubmit) form.requestSubmit(); else { var p = readForm(); if (p) run(p); }
+}
+window.addEventListener('hashchange', maybeDemo);
+
+lang = detectLang();
+applyPreset('typical');
+applyLang();
+maybeDemo();
+})();
+</script>
+</body>
+</html>
