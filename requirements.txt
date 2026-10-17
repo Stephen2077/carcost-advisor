@@ -1,0 +1,4 @@
+fastapi
+uvicorn
+requests
+prismtrace-sdk>=0.4.3
